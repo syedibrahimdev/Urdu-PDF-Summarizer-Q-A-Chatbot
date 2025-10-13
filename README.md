@@ -26,7 +26,25 @@ StudyBuddy is an AI-powered *Urdu document assistant* that helps users upload PD
 
 ## 🗂️ Folder Structure
 
-Urdu-PDF-Summarizer-Q-A-Chatbot/ │ ├── app.py ├── requirements.txt ├── .gitignore ├── .env.example │ ├── src/ │   ├── ingestion.py │   ├── preprocessing.py │   ├── safe_text_utils.py │   └── summarizer.py │ └── temp_uploaded/   # temporary folder for uploaded files
+Urdu-PDF-Summarizer-Q-A-Chatbot/StudyBuddy/
+│
+├── 📄 app.py
+│
+├── 📄 requirements.txt
+├── 📄 .gitignore
+├── 📄 .env.example
+│
+├── 📁 src/
+│   ├── _init_.py
+│   ├── ingestion.py
+│   ├── preprocessing.py
+│   ├── safe_text_utils.py
+│   └── summarizer.py
+│
+├── 📁 temp_uploaded/
+│   └── (temporary PDF files go here, ignored by Git)
+│
+└── 📄 README.md
 
 ---
 
