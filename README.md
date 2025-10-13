@@ -38,30 +38,30 @@ git clone https://github.com/syedibrahimdev/Urdu-PDF-Summarizer-Q-A-Chatbot.git
 
 cd Urdu-PDF-Summarizer-Q-A-Chatbot
 
-2. Create & Activate Virtual Environment
+### 2. Create & Activate Virtual Environment
 
 python -m venv venv
 venv\Scripts\activate     # On Windows
 source venv/bin/activate  # On Mac/Linux
 
-3. Install Dependencies
+### 3. Install Dependencies
 
 pip install -r requirements.txt
 
-4. Set Up Environment Variables
+### 4. Set Up Environment Variables
 
 Create a .env file in the root directory and add your Gemini API key:
 
 GEMINI_API_KEY=your_api_key_here
 
-5. Run the App
+### 5. Run the App
 
 streamlit run app.py
 
 
 ---
 
-🔮 Future Improvements
+### 🔮 Future Improvements
 
 🗣️ Add voice-based Urdu query input
 
@@ -75,7 +75,7 @@ streamlit run app.py
 
 ---
 
-👤 Author
+### 👤 Author
 
 Syed Ibrahim Ahmed
 🎓 AI Engineer in Progress | Machine Learning & Data Science Enthusiast
