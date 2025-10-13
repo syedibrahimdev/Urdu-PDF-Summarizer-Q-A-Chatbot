@@ -35,6 +35,7 @@ Urdu-PDF-Summarizer-Q-A-Chatbot/ │ ├── app.py ├── requirements.txt
 ### 1. Clone the Repository
 bash
 git clone https://github.com/syedibrahimdev/Urdu-PDF-Summarizer-Q-A-Chatbot.git
+
 cd Urdu-PDF-Summarizer-Q-A-Chatbot
 
 2. Create & Activate Virtual Environment
