@@ -1,0 +1,48 @@
+# Python
+*.pyc
+_pycache_/
+*.pyo
+*.pyd
+*.pdb
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDEs / editors
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# dotenv secrets
+.env
+.env.local
+.env.*.local
+
+# Temporary uploads / local data
+temp_uploaded/
+temp_uploaded.pdf
+demo/*.sqlite
+demo/*.db
+
+# Streamlit / logs
+.streamlit/
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Misc
+*.bak
+*.swp
