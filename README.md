@@ -1,107 +1,175 @@
-# 📚 StudyBuddy – Urdu PDF Summarizer & Q&A Chatbot
+<div align="center">
 
-StudyBuddy is an AI-powered *Urdu document assistant* that helps users upload PDFs and either *summarize them in Urdu* or *ask context-based questions* directly from the content — powered by *Google Gemini AI*.
+# 📚 Urdu PDF Summarizer & Q&A Chatbot
 
----
+**AI-powered Urdu document assistant — upload any PDF, get a structured Urdu summary or ask questions in Urdu.**
 
-## 🚀 Features
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io)
+[![Gemini](https://img.shields.io/badge/Google%20Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
-- 📂 Upload Urdu or bilingual PDFs  
-- 🧠 AI-powered Urdu summarization  
-- ❓ Question-answering from PDF context  
-- 🔤 Cleans, normalizes, and processes Urdu text for better understanding  
-- ⚡ Built with Streamlit for instant web app experience
+[🚀 Live Demo](#) · [📂 Source Code](https://github.com/syedibrahimdev/Urdu-PDF-Summarizer-Q-A-Chatbot) · [🐛 Report Bug](https://github.com/syedibrahimdev/Urdu-PDF-Summarizer-Q-A-Chatbot/issues)
 
----
-
-## 🧰 Tech Stack
-
-- *Frontend & UI:* Streamlit  
-- *Backend:* Python  
-- *AI Model:* Google Gemini (via google-generativeai)  
-- *Text Processing:* pdfplumber, clean-text, regex  
-- *Environment:* dotenv, venv  
+</div>
 
 ---
 
-## 🗂️ Folder Structure
+## 🧐 What Is This?
 
-Urdu-PDF-Summarizer-Q-A-Chatbot/StudyBuddy/
-│
-├── 📄 app.py
-│
-├── 📄 requirements.txt
-├── 📄 .gitignore
-├── 📄 .env.example
-│
-├── 📁 src/
-│   ├── _init_.py
-│   ├── ingestion.py
-│   ├── preprocessing.py
-│   ├── safe_text_utils.py
-│   └── summarizer.py
-│
-├── 📁 temp_uploaded/
-│   └── (temporary PDF files go here, ignored by Git)
-│
-└── 📄 README.md
+Most AI tools fail at Urdu — they either transliterate badly or ignore the language entirely.
+
+**Urdu PDF Summarizer** fixes that. Upload any Urdu or bilingual PDF and the app will:
+- Extract and clean the Urdu text properly (preserving RTL characters)
+- Generate a **structured, topic-wise Urdu summary** using Google Gemini
+- Let you **ask questions in Urdu** and get answers grounded in the document
+
+Built for students, researchers, and professionals who work with Urdu content.
 
 ---
 
-## ⚙️ Installation & Usage
+## ✨ Features
 
-### 1. Clone the Repository
-bash
+| Feature | Description |
+|---------|-------------|
+| 📄 PDF Text Extraction | Extracts Urdu/bilingual text using `pdfplumber` |
+| 🧹 Urdu Text Normalization | Cleans unicode artifacts, extra spaces, broken line breaks |
+| 📝 Structured Summarization | Chunk-based summarization merged into topic-wise headings |
+| ❓ Document Q&A | Ask any question — answers are grounded in the uploaded PDF only |
+| ⚡ Streamlit UI | Simple, tabbed interface — no technical knowledge needed |
+
+---
+
+## 🏗️ Architecture
+
+```
+📂 Upload PDF
+      │
+      ▼
+┌─────────────────┐
+│   ingestion.py  │  ← pdfplumber extracts raw text page by page
+└────────┬────────┘
+         │
+         ▼
+┌──────────────────────┐
+│   preprocessing.py   │  ← Cleans hyphenation, extra whitespace
+│   safe_text_utils.py │  ← Validates text, splits into chunks
+└────────┬─────────────┘
+         │
+         ▼
+┌─────────────────┐
+│  summarizer.py  │  ← Gemini 1.5 Flash
+│                 │     • summarize_chunk()  — per-chunk Urdu summary
+│                 │     • merge_summaries()  — final topic-wise merge
+│                 │     • answer_question()  — document-grounded Q&A
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│    app.py       │  ← Streamlit UI with two tabs: Summary | Q&A
+└─────────────────┘
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.10+
+- A [Google Gemini API key](https://ai.google.dev) (free tier works)
+
+### Installation
+
+```bash
+# 1. Clone the repo
 git clone https://github.com/syedibrahimdev/Urdu-PDF-Summarizer-Q-A-Chatbot.git
-
 cd Urdu-PDF-Summarizer-Q-A-Chatbot
 
-### 2. Create & Activate Virtual Environment
-
-python -m venv venv
-venv\Scripts\activate     # On Windows
-source venv/bin/activate  # On Mac/Linux
-
-### 3. Install Dependencies
-
+# 2. Install dependencies
 pip install -r requirements.txt
 
-### 4. Set Up Environment Variables
+# 3. Set up environment variables
+cp .env.example .env
+# Add your Gemini API key inside .env:
+# GEMINI_API_KEY=your_key_here
 
-Create a .env file in the root directory and add your Gemini API key:
-
-GEMINI_API_KEY=your_api_key_here
-
-### 5. Run the App
-
+# 4. Run the app
 streamlit run app.py
+```
 
-
----
-
-### 🔮 Future Improvements
-
-🗣️ Add voice-based Urdu query input
-
-🌍 Add multilingual support (Arabic, English)
-
-🧩 Improve summarization coherence for large PDFs
-
-☁️ Deploy on Streamlit Cloud or Hugging Face Spaces
-
-
+### `.env.example`
+```
+GEMINI_API_KEY=your_gemini_api_key_here
+```
 
 ---
 
-### 👤 Author
+## 📁 Project Structure
 
-Syed Ibrahim Ahmed
-🎓 AI Engineer in Progress | Machine Learning & Data Science Enthusiast
-📧 [ibooo786@hotmail.com]
-🌐 [LinkedIn Profile](https://www.linkedin.com/in/syed-ibrahim-ahmed-6aa304247)
-
+```
+Urdu-PDF-Summarizer-Q-A-Chatbot/
+│
+├── app.py                  # Streamlit UI — main entry point
+├── requirements.txt        # All dependencies
+├── .env.example            # Environment variable template
+├── .gitignore
+│
+└── src/
+    ├── ingestion.py        # PDF text extraction (pdfplumber)
+    ├── preprocessing.py    # Text cleaning & Urdu normalization
+    ├── safe_text_utils.py  # Empty text validation, chunking
+    └── summarizer.py       # Gemini API: summarize + Q&A
+```
 
 ---
 
-⭐ If you like this project, give it a star!
-Your support motivates me to build better AI tools 🌟
+## 🖥️ How to Use
+
+1. **Upload** any Urdu or bilingual PDF using the file uploader
+2. Wait for text extraction and normalization
+3. Go to the **خلاصہ (Summary)** tab → click **خلاصہ بنائیں**
+4. Or go to **سوال جواب (Q&A)** tab → type your question → click **جواب حاصل کریں**
+
+---
+
+## 🔧 Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Language | Python 3.10+ |
+| UI | Streamlit |
+| PDF Parsing | pdfplumber |
+| Text Cleaning | clean-text, regex |
+| LLM | Google Gemini 1.5 Flash |
+| Config | python-dotenv |
+
+---
+
+## 🗺️ Roadmap
+
+- [x] Single PDF upload & summarization
+- [x] Urdu Q&A grounded in document
+- [ ] Multi-PDF support
+- [ ] Chat history with memory
+- [ ] Voice input (speech-to-text)
+- [ ] Hosted deployment (Streamlit Cloud)
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome. For major changes, open an issue first to discuss what you'd like to change.
+
+---
+
+## 👨‍💻 Author
+
+**Syed Ibrahim Ahmed**
+[![GitHub](https://img.shields.io/badge/GitHub-syedibrahimdev-181717?style=flat&logo=github)](https://github.com/syedibrahimdev)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=flat&logo=linkedin)](https://linkedin.com/in/syedibrahimdev)
+
+---
+
+<div align="center">
+  <sub>Built with ❤️ for the Urdu-speaking world</sub>
+</div>
