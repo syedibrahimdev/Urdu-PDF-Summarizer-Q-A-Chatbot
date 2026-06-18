@@ -9,7 +9,7 @@
 [![Gemini](https://img.shields.io/badge/Google%20Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
-[🚀 Live Demo](#) · [📂 Source Code](https://github.com/syedibrahimdev/Urdu-PDF-Summarizer-Q-A-Chatbot) · [🐛 Report Bug](https://github.com/syedibrahimdev/Urdu-PDF-Summarizer-Q-A-Chatbot/issues)
+[🚀 Live Demo](https://syedibrahimdev-urdu-pdf-summarizer.streamlit.app) · [📂 Source Code](https://github.com/syedibrahimdev/Urdu-PDF-Summarizer-Q-A-Chatbot) · [🐛 Report Bug](https://github.com/syedibrahimdev/Urdu-PDF-Summarizer-Q-A-Chatbot/issues)
 
 </div>
 
@@ -21,6 +21,7 @@ Most AI tools fail at Urdu — they either transliterate badly or ignore the lan
 
 **Urdu PDF Summarizer** fixes that. Upload any Urdu or bilingual PDF and the app will:
 - Extract and clean the Urdu text properly (preserving RTL characters)
+- Automatically run **OCR on scanned/image-based pages** using Tesseract (Urdu + English)
 - Generate a **structured, topic-wise Urdu summary** using Google Gemini
 - Let you **ask questions in Urdu** and get answers grounded in the document
 
@@ -33,42 +34,68 @@ Built for students, researchers, and professionals who work with Urdu content.
 | Feature | Description |
 |---------|-------------|
 | 📄 PDF Text Extraction | Extracts Urdu/bilingual text using `pdfplumber` |
+| 🔍 Smart OCR Fallback | Automatically detects image-based pages and runs Tesseract OCR (urd+eng) |
 | 🧹 Urdu Text Normalization | Cleans unicode artifacts, extra spaces, broken line breaks |
 | 📝 Structured Summarization | Chunk-based summarization merged into topic-wise headings |
-| ❓ Document Q&A | Ask any question — answers are grounded in the uploaded PDF only |
+| ❓ Document Q&A (Chat) | Chat-style Q&A with history — answers grounded in the uploaded PDF only |
+| 📂 Multi-PDF Support | Upload multiple PDFs at once — merged and processed together |
+| ↔️ RTL Text Rendering | Proper right-to-left display for Urdu text in UI |
 | ⚡ Streamlit UI | Simple, tabbed interface — no technical knowledge needed |
 
 ---
 
 ## 🏗️ Architecture
+📂 Upload PDF(s)
 
-```
-📂 Upload PDF
-      │
-      ▼
+│
+
+▼
+
 ┌─────────────────┐
-│   ingestion.py  │  ← pdfplumber extracts raw text page by page
+
+│   ingestion.py  │  ← pdfplumber extracts text page by page
+
+│                 │     if page text < 20 chars → Tesseract OCR fallback (urd+eng)
+
 └────────┬────────┘
-         │
-         ▼
+
+│
+
+▼
+
 ┌──────────────────────┐
+
 │   preprocessing.py   │  ← Cleans hyphenation, extra whitespace
+
 │   safe_text_utils.py │  ← Validates text, splits into chunks
+
 └────────┬─────────────┘
-         │
-         ▼
+
+│
+
+▼
+
 ┌─────────────────┐
-│  summarizer.py  │  ← Gemini 1.5 Flash
+
+│  summarizer.py  │  ← Gemini 2.5 Flash Lite
+
 │                 │     • summarize_chunk()  — per-chunk Urdu summary
+
 │                 │     • merge_summaries()  — final topic-wise merge
+
 │                 │     • answer_question()  — document-grounded Q&A
+
 └────────┬────────┘
-         │
-         ▼
+
+│
+
+▼
+
 ┌─────────────────┐
-│    app.py       │  ← Streamlit UI with two tabs: Summary | Q&A
+
+│    app.py       │  ← Streamlit UI: Summary tab | Chat Q&A tab
+
 └─────────────────┘
-```
 
 ---
 
@@ -77,6 +104,21 @@ Built for students, researchers, and professionals who work with Urdu content.
 ### Prerequisites
 - Python 3.10+
 - A [Google Gemini API key](https://ai.google.dev) (free tier works)
+- Tesseract OCR (for scanned PDFs)
+
+### Install Tesseract (for OCR support)
+
+**Windows:** Download installer from [UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki) — during install, check **Urdu** in the language list. Also install [Poppler for Windows](https://github.com/oschwartz10612/poppler-windows/releases) and add both to your system PATH.
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get install tesseract-ocr tesseract-ocr-urd poppler-utils
+```
+
+**macOS:**
+```bash
+brew install tesseract tesseract-lang poppler
+```
 
 ### Installation
 
@@ -97,38 +139,46 @@ cp .env.example .env
 streamlit run app.py
 ```
 
-### `.env.example`
-```
+### `.env.example
 GEMINI_API_KEY=your_gemini_api_key_here
-```
 
 ---
 
 ## 📁 Project Structure
-
-```
 Urdu-PDF-Summarizer-Q-A-Chatbot/
+
 │
+
 ├── app.py                  # Streamlit UI — main entry point
-├── requirements.txt        # All dependencies
+
+├── requirements.txt        # Python dependencies
+
+├── packages.txt            # System dependencies (Tesseract, Poppler) for Streamlit Cloud
+
 ├── .env.example            # Environment variable template
+
 ├── .gitignore
+
 │
+
 └── src/
-    ├── ingestion.py        # PDF text extraction (pdfplumber)
-    ├── preprocessing.py    # Text cleaning & Urdu normalization
-    ├── safe_text_utils.py  # Empty text validation, chunking
-    └── summarizer.py       # Gemini API: summarize + Q&A
-```
+
+├── ingestion.py        # PDF extraction with smart OCR fallback
+
+├── preprocessing.py    # Text cleaning & Urdu normalization
+
+├── safe_text_utils.py  # Empty text validation, chunking, truncation
+
+└── summarizer.py       # Gemini API: summarize + Q&A
 
 ---
 
 ## 🖥️ How to Use
 
-1. **Upload** any Urdu or bilingual PDF using the file uploader
-2. Wait for text extraction and normalization
+1. **Upload** one or more Urdu/bilingual PDFs using the sidebar uploader
+2. Click **فائلیں پروسیس کریں** — text is extracted (OCR runs automatically on scanned pages)
 3. Go to the **خلاصہ (Summary)** tab → click **خلاصہ بنائیں**
-4. Or go to **سوال جواب (Q&A)** tab → type your question → click **جواب حاصل کریں**
+4. Or go to the **سوال جواب (Chat)** tab → type your question in Urdu and get a grounded answer
 
 ---
 
@@ -139,8 +189,9 @@ Urdu-PDF-Summarizer-Q-A-Chatbot/
 | Language | Python 3.10+ |
 | UI | Streamlit |
 | PDF Parsing | pdfplumber |
+| OCR | Tesseract 5.x (urd+eng) + pdf2image + Poppler |
 | Text Cleaning | clean-text, regex |
-| LLM | Google Gemini 1.5 Flash |
+| LLM | Google Gemini 2.5 Flash Lite |
 | Config | python-dotenv |
 
 ---
@@ -149,10 +200,13 @@ Urdu-PDF-Summarizer-Q-A-Chatbot/
 
 - [x] Single PDF upload & summarization
 - [x] Urdu Q&A grounded in document
-- [ ] Multi-PDF support
-- [ ] Chat history with memory
+- [x] Multi-PDF support
+- [x] Chat history with session state
+- [x] Smart OCR fallback for scanned/image PDFs
+- [x] RTL text rendering
+- [x] Hosted deployment (Streamlit Cloud)
 - [ ] Voice input (speech-to-text)
-- [ ] Hosted deployment (Streamlit Cloud)
+- [ ] Export summary as PDF
 
 ---
 

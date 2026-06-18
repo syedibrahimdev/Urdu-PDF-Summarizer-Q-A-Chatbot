@@ -15,9 +15,22 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# ── RTL CSS ───────────────────────────────────────────────────────────────────
+st.markdown("""
+<style>
+.urdu-text {
+    direction: rtl;
+    text-align: right;
+    font-size: 16px;
+    line-height: 2;
+    font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # ── Session state init ────────────────────────────────────────────────────────
 if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []      # list of {"role": "user"/"assistant", "content": str}
+    st.session_state.chat_history = []
 if "document_text" not in st.session_state:
     st.session_state.document_text = ""
 if "summary" not in st.session_state:
@@ -40,11 +53,9 @@ with st.sidebar:
 
     if uploaded_files:
         if st.button("📥 فائلیں پروسیس کریں", use_container_width=True):
-            # Save temp files
             temp_paths = []
             for uf in uploaded_files:
-                suffix = ".pdf"
-                with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
                     tmp.write(uf.getbuffer())
                     temp_paths.append((uf.name, tmp.name))
 
@@ -52,15 +63,12 @@ with st.sidebar:
                 path_map = {name: path for name, path in temp_paths}
                 extracted, errors = extract_text_from_multiple(list(path_map.values()))
 
-                # Rename keys back to original filenames
                 renamed = {}
                 for orig_name, tmp_path in temp_paths:
-                    tmp_filename = tmp_path.split("/")[-1]
                     for key in extracted:
                         if tmp_path.endswith(key) or key in tmp_path:
                             renamed[orig_name] = extracted[key]
                             break
-                # Fallback: use extracted as-is if rename didn't work
                 if not renamed:
                     renamed = extracted
 
@@ -81,13 +89,12 @@ with st.sidebar:
                     merged = merge_texts(cleaned)
                     st.session_state.document_text = merged
                     st.session_state.processed_files = list(cleaned.keys())
-                    st.session_state.chat_history = []  # reset chat on new upload
+                    st.session_state.chat_history = []
                     st.session_state.summary = ""
                     st.success(f"✅ {len(cleaned)} فائل(یں) تیار ہیں!")
                 else:
                     st.error("❌ کسی بھی فائل سے متن نہیں نکالا جا سکا۔")
 
-            # Cleanup temp files
             for _, tmp_path in temp_paths:
                 try:
                     os.unlink(tmp_path)
@@ -119,7 +126,6 @@ st.title("📚 Urdu PDF Summarizer & Q&A")
 
 if not st.session_state.document_text:
     st.info("👈 بائیں طرف PDF فائلیں اپ لوڈ کریں اور 'فائلیں پروسیس کریں' بٹن دبائیں۔")
-
     st.markdown("### یہ ایپ کیا کرتی ہے؟")
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -133,7 +139,7 @@ if not st.session_state.document_text:
         st.markdown("دستاویز سے متعلق کوئی بھی سوال اردو میں پوچھیں")
     st.stop()
 
-# Tabs
+# ── Tabs ──────────────────────────────────────────────────────────────────────
 tab1, tab2 = st.tabs(["📝 خلاصہ", "💬 سوال جواب (Chat)"])
 
 # ── Tab 1: Summary ────────────────────────────────────────────────────────────
@@ -141,7 +147,10 @@ with tab1:
     st.subheader("📝 دستاویز کا خلاصہ")
 
     if st.session_state.summary:
-        st.markdown(st.session_state.summary)
+        st.markdown(
+            f'<div class="urdu-text">{st.session_state.summary}</div>',
+            unsafe_allow_html=True
+        )
         if st.button("🔄 دوبارہ بنائیں"):
             st.session_state.summary = ""
             st.rerun()
@@ -159,21 +168,23 @@ with tab1:
 with tab2:
     st.subheader("💬 دستاویز سے سوال پوچھیں")
 
-    # Render chat history
     for msg in st.session_state.chat_history:
         with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
+            st.markdown(
+                f'<div class="urdu-text">{msg["content"]}</div>',
+                unsafe_allow_html=True
+            )
 
-    # Chat input
     query = st.chat_input("اپنا سوال یہاں لکھیں...")
 
     if query:
-        # Show user message
         st.session_state.chat_history.append({"role": "user", "content": query})
         with st.chat_message("user"):
-            st.markdown(query)
+            st.markdown(
+                f'<div class="urdu-text">{query}</div>',
+                unsafe_allow_html=True
+            )
 
-        # Get answer
         with st.chat_message("assistant"):
             with st.spinner("جواب تلاش کیا جا رہا ہے..."):
                 try:
@@ -181,11 +192,13 @@ with tab2:
                     answer = answer_question(context, query)
                 except Exception as e:
                     answer = f"❌ جواب حاصل کرنے میں خرابی: {e}"
-                st.markdown(answer)
+            st.markdown(
+                f'<div class="urdu-text">{answer}</div>',
+                unsafe_allow_html=True
+            )
 
         st.session_state.chat_history.append({"role": "assistant", "content": answer})
 
-    # Clear chat button
     if st.session_state.chat_history:
         if st.button("🗑️ گفتگو صاف کریں"):
             st.session_state.chat_history = []
