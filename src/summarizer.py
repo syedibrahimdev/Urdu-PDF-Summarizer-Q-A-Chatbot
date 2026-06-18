@@ -1,26 +1,20 @@
 import os
-import google.genai as genai
+from google import genai
 from textwrap import wrap
 from dotenv import load_dotenv
 
 load_dotenv()
 
-_api_key = os.getenv("GEMINI_API_KEY")
-if _api_key:
-    genai.configure(api_key=_api_key)
-
 CHUNK_SIZE = 2000
 
 
-def _get_model():
-    """Return configured Gemini model. Raises clear error if API key missing."""
+def _get_client():
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise EnvironmentError(
             "GEMINI_API_KEY not found. Please set it in your .env file or Streamlit secrets."
         )
-    genai.configure(api_key=api_key)
-    return genai.GenerativeModel("gemini-2.5-flash-lite")
+    return genai.Client(api_key=api_key)
 
 
 def chunk_text(text: str, size: int = CHUNK_SIZE):
@@ -31,7 +25,7 @@ def chunk_text(text: str, size: int = CHUNK_SIZE):
 def summarize_chunk(chunk: str) -> str:
     """Summarize a single chunk of text in Urdu."""
     try:
-        model = _get_model()
+        client = _get_client()
         prompt = f"""
 براہ کرم اس متن کو اردو میں مختصر اور بامعنی انداز میں خلاصہ کریں۔
 اہم نکات کو نمایاں کریں اور اگر ممکن ہو تو thematically group کریں۔
@@ -39,7 +33,10 @@ def summarize_chunk(chunk: str) -> str:
 متن:
 {chunk}
 """
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash-lite",
+            contents=prompt
+        )
         return response.text.strip() if response and response.text else ""
     except Exception as e:
         return f"[خلاصہ میں خرابی: {e}]"
@@ -48,11 +45,10 @@ def summarize_chunk(chunk: str) -> str:
 def merge_summaries(summaries: list) -> str:
     """Merge multiple chunk summaries into one final structured Urdu summary."""
     try:
-        model = _get_model()
+        client = _get_client()
         joined = "\n\n".join([s for s in summaries if s])
         if not joined:
             return "کوئی خلاصہ تیار نہیں ہو سکا۔"
-
         prompt = f"""
 یہ مختلف حصوں کے خلاصے ہیں۔ براہ کرم ان سب کو ملا کر ایک مکمل، مربوط اور
 سمجھنے میں آسان اردو خلاصہ بنا دیں۔
@@ -61,7 +57,10 @@ def merge_summaries(summaries: list) -> str:
 خلاصے:
 {joined}
 """
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash-lite",
+            contents=prompt
+        )
         return response.text.strip() if response and response.text else "خلاصہ دستیاب نہیں۔"
     except Exception as e:
         return f"[خلاصہ ملانے میں خرابی: {e}]"
@@ -81,7 +80,7 @@ def answer_question(text: str, query: str) -> str:
     if not query or not query.strip():
         return "براہ کرم ایک سوال درج کریں۔"
     try:
-        model = _get_model()
+        client = _get_client()
         prompt = f"""
 آپ کو ایک دستاویز کا متن اور ایک سوال دیا گیا ہے۔
 براہ کرم سوال کا جواب اردو میں دیں اور صرف اسی متن کی بنیاد پر دیں۔
@@ -92,7 +91,10 @@ def answer_question(text: str, query: str) -> str:
 متن:
 {text}
 """
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash-lite",
+            contents=prompt
+        )
         return response.text.strip() if response and response.text else "معذرت، جواب نہیں ملا۔"
     except Exception as e:
         return f"[جواب حاصل کرنے میں خرابی: {e}]"
