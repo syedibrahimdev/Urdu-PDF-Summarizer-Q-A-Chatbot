@@ -9,7 +9,7 @@
 [![Gemini](https://img.shields.io/badge/Google%20Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
-[🚀 Live Demo](https://syedibrahimdev-urdu-pdf-summarizer.streamlit.app) · [📂 Source Code](https://github.com/syedibrahimdev/Urdu-PDF-Summarizer-Q-A-Chatbot) · [🐛 Report Bug](https://github.com/syedibrahimdev/Urdu-PDF-Summarizer-Q-A-Chatbot/issues)
+[🚀 Live Demo](https://urdu-pdf-summarizer-q-a-chatbot-vtx8rax4ep5ubar2k6irwv.streamlit.app) · [📂 Source Code](https://github.com/syedibrahimdev/Urdu-PDF-Summarizer-Q-A-Chatbot) · [🐛 Report Bug](https://github.com/syedibrahimdev/Urdu-PDF-Summarizer-Q-A-Chatbot/issues)
 
 </div>
 
